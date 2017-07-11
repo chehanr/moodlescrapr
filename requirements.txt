@@ -1,0 +1,5 @@
+# moodlescrapr.py: 10
+bs4 == 0.0.1
+
+# moodlescrapr.py: 9
+requests == 2.18.1

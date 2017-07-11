@@ -154,9 +154,11 @@ def get_folder_file(username, subject_name, week_id, file_url):
 
 
 def get_file_type(username, subject_name, week_id, file_type, file_url):
-    """Determine file type."""
+    """
+    Determine file type.
+    TODO add support for other file types like xlsx. 
+    """
     if file_type == 'https://learning.acbt.lk/moodle/pix/f/pdf.gif':
-        # download(username, subject_name, week_id, file_url)
         get_pdf(username, subject_name, week_id, file_url)
     elif file_type == 'https://learning.acbt.lk/moodle/pix/f/pptx.gif':
         download(username, subject_name, week_id, file_url)
@@ -179,7 +181,9 @@ def get_file_type(username, subject_name, week_id, file_type, file_url):
     elif file_type == 'https://learning.acbt.lk/moodle/pix/f/folder.gif':
         get_folder_file(username, subject_name, week_id, file_url)
     else:
-        print(file_url, '[ERROR] (cannot recognize file type)')
+        file_type_found_ext = basename(file_type).rsplit('.', 1)[0]
+        print(file_url, '[ERROR] (cannot recognize file type',
+              '".' + file_type_found_ext + '")')
 
 
 def get_file(username, subject_name, subject_id, week_id):
@@ -216,7 +220,6 @@ def scrape(username, specific_subject, specific_week):
     weeks = []
 
     if specific_subject and specific_week:
-        # send after below line.
         print('\nScraping week', specific_week, 'files of', specific_subject)
         for subject in soup.find_all('div', attrs={'class': 'name'}):
             subject_name = subject.text

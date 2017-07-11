@@ -25,3 +25,6 @@ Prerequisites:
     requests == 2.18.1
 
  *Note:*  Make sure to have all week containers in the moodle expanded before running this script. 
+
+ 
+ *Note-2:*  Only tested on my account.

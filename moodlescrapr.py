@@ -99,9 +99,9 @@ def get_image(username, subject_name, week_id, file_url):
         response = SESSION.get(file_url)
         soup = BeautifulSoup(
             response.content, 'html.parser')
-        for pdf_urls in soup.find_all('div', attrs={'class': 'resourcepdf'}):
-            pdf_src = pdf_urls.find('a')['href']
-            download(username, subject_name, week_id, pdf_src)
+        for img_urls in soup.find_all('div', attrs={'class': 'resourcecontent resourceimg'}):
+            img_src = img_urls.find('img')['src']
+            download(username, subject_name, week_id, img_src)
 
 
 def get_pdf(username, subject_name, week_id, file_url):
@@ -112,9 +112,9 @@ def get_pdf(username, subject_name, week_id, file_url):
         response = SESSION.get(file_url)
         soup = BeautifulSoup(
             response.content, 'html.parser')
-        for archive_urls in soup.find_all('div', attrs={'class': 'resourcepdf'}):
-            archive_src = archive_urls.find('a')['href']
-            download(username, subject_name, week_id, archive_src)
+        for pdf_urls in soup.find_all('div', attrs={'class': 'resourcepdf'}):
+            pdf_src = pdf_urls.find('a')['href']
+            download(username, subject_name, week_id, pdf_src)
 
 
 def get_external_site(file_url):

@@ -8,6 +8,7 @@ from os.path import basename
 
 import requests
 from bs4 import BeautifulSoup, SoupStrainer
+from clint.textui import progress
 
 SESSION = requests.Session()
 CWD = os.getcwd()
@@ -28,14 +29,15 @@ def dir_exist(path):
 
 
 def get_file_src(username, subject_name, week_id, file_url):
-    """ A very hacky way to get redirected download urls."""
-    response = SESSION.get(file_url)
+    """A very hacky way to get redirected download urls."""
+    response = SESSION.get(file_url, stream=True)
     if response.history:
-        """Retrieves docx/pptx files mostly. TODO change to a http method"""
-        response = SESSION.head(file_url, allow_redirects=False)
+        """Retrieves docx/pptx files mostly. TODO fix this, its too slow."""
+        response = SESSION.head(file_url, allow_redirects=False, stream=True)
         file_src = response.headers['Location']
         download(username, subject_name, week_id, file_src)
     else:
+        """Assuming its another popup."""
         get_popup_url(username, subject_name, week_id, file_url)
 
 
@@ -46,16 +48,18 @@ def download(username, subject_name, week_id, file_url):
     if '/file.php/' in file_url:
         dir_exist(path)
         file_name = basename(file_url)
-        print(file_name + ': ', end='')
+        print(file_name + ':')
         if not os.path.isfile(path + file_name):
             response = SESSION.get(file_url)
-            # file_size = int(response.headers.get('content-length', 0))
-            file = response._content
             with open(path + file_name, 'wb') as f:
-                f.write(file)
+                total_length = int(response.headers.get('content-length', 0))
+                for chunk in progress.bar(response.iter_content(chunk_size=1024), expected_size=(total_length / 1024) + 1):
+                    if chunk:
+                        f.write(chunk)
+                        f.flush()
             file_on_disk = open(path + file_name, 'rb')
             size_on_disk = len(file_on_disk.read())
-            print('[DONE] (size on disk:', str(size_on_disk) + ')')
+            print('[DOWNLOADED] (size on disk:', str(size_on_disk) + ')')
         else:
             print('[SKIPPED] (already exists)')
 
@@ -267,7 +271,7 @@ def scrape(username, specific_subject, specific_week):
             for _ in soup.find_all('h3', attrs={'class': 'weekdates'}):
                 weeks.append(None)
                 week_id = len(weeks)
-                # reset(subject_id)
+                reset(subject_id)
                 get_file(username, subject_name, subject_id, week_id)
             del weeks[:]
 

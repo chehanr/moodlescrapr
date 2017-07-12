@@ -22,6 +22,7 @@ Additional options:
 Prerequisites: 
 
     bs4 == 0.0.1
+    clint == 0.5.1
     requests == 2.18.1
 
  *Note:*  Make sure to have all week containers in the moodle expanded before running this script. 

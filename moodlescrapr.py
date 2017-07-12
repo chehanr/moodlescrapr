@@ -50,7 +50,7 @@ def download(username, subject_name, week_id, file_url):
         file_name = basename(file_url)
         print(file_name + ':')
         if not os.path.isfile(path + file_name):
-            response = SESSION.get(file_url)
+            response = SESSION.get(file_url, stream=True)
             with open(path + file_name, 'wb') as f:
                 total_length = int(response.headers.get('content-length', 0))
                 for chunk in progress.bar(response.iter_content(chunk_size=1024), expected_size=(total_length / 1024) + 1):
@@ -209,7 +209,7 @@ def get_file(username, subject_name, subject_id, week_id):
                 get_file_type(username, subject_name,
                               week_id, file_type, file_url)
                 reset(subject_id)
-    reset(subject_id)
+    # reset(subject_id)
 
 
 def scrape(username, specific_subject, specific_week):

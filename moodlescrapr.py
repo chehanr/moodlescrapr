@@ -208,7 +208,7 @@ def get_file(username, subject_name, subject_id, week_id):
                     'img', attrs={'class': 'activityicon'})['src']
                 get_file_type(username, subject_name,
                               week_id, file_type, file_url)
-                # reset(subject_id)
+                reset(subject_id)
     reset(subject_id)
 
 
@@ -271,7 +271,7 @@ def scrape(username, specific_subject, specific_week):
             for _ in soup.find_all('h3', attrs={'class': 'weekdates'}):
                 weeks.append(None)
                 week_id = len(weeks)
-                reset(subject_id)
+                # reset(subject_id)
                 get_file(username, subject_name, subject_id, week_id)
             del weeks[:]
 

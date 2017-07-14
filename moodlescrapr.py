@@ -32,7 +32,7 @@ def get_file_src(username, subject_name, week_id, file_url):
     """A very hacky way to get redirected download urls."""
     response = SESSION.get(file_url, stream=True)
     if response.history:
-        """Retrieves docx/pptx files mostly. TODO fix this, its too slow."""
+        """Retrieves docx/pptx/xlsx files mostly. TODO fix this, its too slow."""
         response = SESSION.head(file_url, allow_redirects=False, stream=True)
         file_src = response.headers['Location']
         download(username, subject_name, week_id, file_src)
@@ -160,18 +160,20 @@ def get_folder_file(username, subject_name, week_id, file_url):
 def get_file_type(username, subject_name, week_id, file_type, file_url):
     """
     Determine file type.
-    TODO add support for other file types like xlsx. 
+    TODO add support for other file types. 
     """
     if file_type == 'https://learning.acbt.lk/moodle/pix/f/pdf.gif':
         get_pdf(username, subject_name, week_id, file_url)
     elif file_type == 'https://learning.acbt.lk/moodle/pix/f/pptx.gif':
         download(username, subject_name, week_id, file_url)
     elif file_type == 'https://learning.acbt.lk/moodle/pix/f/powerpoint.gif':
-        get_popup_url(username, subject_name, week_id, file_url)
+        download(username, subject_name, week_id, file_url)
     elif file_type == 'https://learning.acbt.lk/moodle/pix/f/docx.gif':
         download(username, subject_name, week_id, file_url)
     elif file_type == 'https://learning.acbt.lk/moodle/pix/f/word.gif':
-        get_popup_url(username, subject_name, week_id, file_url)
+        download(username, subject_name, week_id, file_url)
+    elif file_type == 'https://learning.acbt.lk/moodle/pix/f/xlsx.gif':
+        download(username, subject_name, week_id, file_url)
     elif file_type == 'https://learning.acbt.lk/moodle/pix/f/web.gif':
         get_external_site(file_url)
     elif file_type == 'https://learning.acbt.lk/moodle/pix/f/text.gif':

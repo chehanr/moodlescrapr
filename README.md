@@ -29,4 +29,4 @@ Prerequisites:
 
  *Note-2:*  Only tested on my account.
 
- *Note-3:*  Since `Note-2` I can't add support for some file types (.xlsx) because I couldn't find them on my moodle. If an error pops up create an issue or submit your own fix as a fork.  
+ *Note-3:*  Since `Note-2` I can't add support for some file types ~~(.xlsx)~~ because I couldn't find them on my moodle. If an error pops up create an issue or submit your own fix as a fork.  

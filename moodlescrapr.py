@@ -16,9 +16,9 @@ CWD = os.getcwd()
 
 def reset(subject_id):
     """Neccessory since the moodle is trash."""
-    reset_url = 'https://learning.acbt.lk/moodle/course/view.php?id=' + \
-        subject_id + '&week=0#section-1'
-    SESSION.get(reset_url)
+    payload = {'id': subject_id, 'week': '0#section-1'}
+    SESSION.get('https://learning.acbt.lk/moodle/course/view.php',
+                params=payload)
 
 
 def dir_exist(path):
@@ -33,9 +33,13 @@ def get_file_src(username, subject_name, week_id, file_url):
     response = SESSION.get(file_url, stream=True)
     if response.history:
         """Retrieves docx/pptx/xlsx files mostly. TODO fix this, its too slow."""
-        response = SESSION.head(file_url, allow_redirects=False, stream=True)
-        file_src = response.headers['Location']
-        download(username, subject_name, week_id, file_src)
+        try:
+            response = SESSION.head(
+                file_url, allow_redirects=False, stream=True)
+            file_src = response.headers['Location']
+            download(username, subject_name, week_id, file_src)
+        except requests.exceptions.RequestException as err:
+            print(err)
     else:
         """Assuming its another popup."""
         get_popup_url(username, subject_name, week_id, file_url)
@@ -50,16 +54,20 @@ def download(username, subject_name, week_id, file_url):
         file_name = basename(file_url)
         print(file_name + ':')
         if not os.path.isfile(path + file_name):
-            response = SESSION.get(file_url, stream=True)
-            with open(path + file_name, 'wb') as f:
-                total_length = int(response.headers.get('content-length', 0))
-                for chunk in progress.bar(response.iter_content(chunk_size=1024), expected_size=(total_length / 1024) + 1):
-                    if chunk:
-                        f.write(chunk)
-                        f.flush()
-            file_on_disk = open(path + file_name, 'rb')
-            size_on_disk = len(file_on_disk.read())
-            print('[DOWNLOADED] (size on disk:', str(size_on_disk) + ')')
+            try:
+                response = SESSION.get(file_url, stream=True)
+                total_length = int(
+                        response.headers.get('content-length', 0))
+                with open(path + file_name, 'wb') as file:
+                    for chunk in progress.bar(response.iter_content(chunk_size=1024), expected_size=(total_length / 1024) + 1):
+                        if chunk:
+                            file.write(chunk)
+                            file.flush()
+                file_on_disk = open(path + file_name, 'rb')
+                size_on_disk = len(file_on_disk.read())
+                print('[DOWNLOADED] (size on disk:', str(size_on_disk) + ')')
+            except:
+                print('[ERROR] (failed to create file)')
         else:
             print('[SKIPPED] (already exists)')
 
@@ -67,6 +75,23 @@ def download(username, subject_name, week_id, file_url):
         get_file_src(username, subject_name, week_id, file_url)
     else:
         print(file_url, '[ERROR] (error retrieving direct link)')
+
+
+def write_content(username, subject_name, week_id, content):
+    """
+        Create txt file with text from the section.
+        TODO replace with markdown.
+    """
+    path = CWD + '\\scrape' + '\\' + username.upper() + '\\' + subject_name + '\\' + \
+        'Week ' + str(week_id) + '\\'
+    file_name = 'content_week_' + str(week_id) + '.txt'
+    dir_exist(path)
+    try:
+        with open(path + file_name, 'w') as text_file:
+            text_file.write(content)
+            text_file.close()
+    except:
+        print('[ERROR] (failed to write content file)')
 
 
 def get_popup_url(username, subject_name, week_id, file_url):
@@ -159,8 +184,8 @@ def get_folder_file(username, subject_name, week_id, file_url):
 
 def get_file_type(username, subject_name, week_id, file_type, file_url):
     """
-    Determine file type.
-    TODO add support for other file types. 
+        Determine file type.
+        TODO add support for other file types. 
     """
     if file_type == 'https://learning.acbt.lk/moodle/pix/f/pdf.gif':
         get_pdf(username, subject_name, week_id, file_url)
@@ -194,15 +219,16 @@ def get_file_type(username, subject_name, week_id, file_type, file_url):
 
 def get_file(username, subject_name, subject_id, week_id):
     """Retrieve resource urls."""
-    url = 'https://learning.acbt.lk/moodle/course/view.php?id=' + \
-        str(subject_id) + '&week=' + str(week_id)
     print('\n' + 'Downloading files from', subject_name,
           'in week', str(week_id))
-    response = SESSION.get(url)
+    payload = {'id': subject_id, 'week': week_id}
+    response = SESSION.get(
+        'https://learning.acbt.lk/moodle/course/view.php', params=payload)
     strainer = SoupStrainer('table', attrs={'class': 'weeks'})
     soup = BeautifulSoup(
         response.content, 'html.parser', parse_only=strainer)
     for section in soup.find_all('tr', attrs={'id': 'section-' + str(week_id)}):
+        write_content(username, subject_name, week_id, section.text)
         for file_urls in section.find_all('li', attrs={'class': 'activity resource'}):
             file_url = file_urls.find('a')['href']
             if '/resource/' in file_url:
@@ -279,14 +305,17 @@ def scrape(username, specific_subject, specific_week):
 
 
 def auth(username, password, specific_subject, specific_week):
-    """Log into moodle. TODO add try/except."""
+    """Log into moodle."""
     if not username:
         username = input('Moodle username: ')
     if not password:
-        password = getpass.getpass('Moodle password (hidden):')
-    auth = {'username': username, 'password': password}
-    SESSION.post('https://learning.acbt.lk/user/login', data=auth)
-    return scrape(username, specific_subject, specific_week)
+        password = getpass.getpass('Moodle password (hidden): ')
+    try:
+        auth = {'username': username, 'password': password}
+        SESSION.post('https://learning.acbt.lk/user/login', data=auth)
+        return scrape(username, specific_subject, specific_week)
+    except requests.exceptions.RequestException as err:
+        print(err)
 
 
 def arg_parse():

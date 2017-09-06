@@ -57,7 +57,7 @@ def download(username, subject_name, week_id, file_url):
             try:
                 response = SESSION.get(file_url, stream=True)
                 total_length = int(
-                        response.headers.get('content-length', 0))
+                    response.headers.get('content-length', 0))
                 with open(path + file_name, 'wb') as file:
                     for chunk in progress.bar(response.iter_content(chunk_size=1024), expected_size=(total_length / 1024) + 1):
                         if chunk:

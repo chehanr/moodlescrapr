@@ -223,17 +223,26 @@ class Scrape:
     def subjects(self):
         """Returns subject list."""
         response = self.session.get('https://learning.acbt.lk/moodle')
-        strainer = SoupStrainer('div', attrs={'class': 'coursebox clearfix'})
+        strainer = SoupStrainer(
+            'div', attrs={'class': 'block_course_list sideblock'})
         soup = BeautifulSoup(
             response.content, 'lxml', parse_only=strainer)
 
         subjects_list = []
+        for _ in soup.find_all('div', attrs={'class': 'content'}):
+            for _ in _.find_all('ul', attrs={'class': 'list'}):
+                for li_subject in _.find_all('li'):
+                    for subject in li_subject.find_all('div', attrs={'class': 'column c1'}):
+                        _subject_name = subject.text
+                        _subject_code = subject.find('a')['title']
+                        subject_url = subject.find('a')['href']
+                        subject_id = subject_url.split('id=', 1)[1]
 
-        for subject in soup.find_all('div', attrs={'class': 'name'}):
-            subject_name = subject.text
-            subject_url = subject.find('a')['href']
-            subject_id = subject_url.split('id=', 1)[1]
-            subjects_list.append((subject_name, subject_url, subject_id))
+                        subject_name = '%s (%s)' % (
+                            _subject_code.upper(), _subject_name)
+
+                        subjects_list.append(
+                            (subject_name, subject_url, subject_id))
 
         return subjects_list
 

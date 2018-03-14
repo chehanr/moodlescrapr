@@ -56,12 +56,14 @@ class Download:
         file_src = self.file_source(resource_url, resource_type)
         if file_src:
             self._dir()
-            file_name = basename(file_src)
             chunk_size = 512
             downloaded = 0
+            file_name = basename(file_src)
+            file_extension = os.path.splitext(file_name)[1]
             d_file_name = file_name.ljust(50)[:50]
             d_week = ('week %s' % (self.week)).ljust(8)[:8]
-            d_resource_type = resource_type.ljust(8)[:8]
+            # d_resource_type = resource_type.ljust(8)[:8]
+            d_file_extension = file_extension.ljust(8)[:8]
             if not os.path.isfile(self.path + file_name):
                 try:
                     response = self.session.get(file_src, stream=True)
@@ -75,17 +77,17 @@ class Download:
                                     100 * downloaded / total_length)
                                 self.spinner.start()
                                 self.spinner.text = '%s | %s | %s | downloading (%s%%)' % (
-                                    d_week, d_file_name, d_resource_type, round(percentage, 2))
+                                    d_week, d_file_name, d_file_extension, round(percentage, 2))
                                 file.write(chunk)
                                 file.flush()
                     file_size = self._file_size(self.path, file_name)
                     self.spinner.succeed(
                         text=('%s | %s | %s | downloaded (size: %s)' % (
-                            d_week, d_file_name, d_resource_type, file_size)))
+                            d_week, d_file_name, d_file_extension, file_size)))
                 except Exception as err:
                     self.spinner.fail(
                         text=('%s | %s | %s | failed to create file (%s)' % (
-                            d_week, d_file_name, d_resource_type, err)))
+                            d_week, d_file_name, d_file_extension, err)))
             else:
                 response = self.session.get(file_src, stream=True)
                 total_length = int(
@@ -106,10 +108,10 @@ class Download:
                         _replace_file()
                     else:
                         self.spinner.info(text=('%s | %s | %s | skipped (already exists)' % (
-                            d_week, d_file_name, d_resource_type)))
+                            d_week, d_file_name, d_file_extension)))
                 else:
                     self.spinner.info(text=('%s | %s | %s | file changed (size different) %s' % (
-                        d_week, d_file_name, d_resource_type, 'replacing...' if ARGS.replace_changed else '')))
+                        d_week, d_file_name, d_file_extension, 'replacing...' if ARGS.replace_changed else '')))
                     if ARGS.replace_changed:
                         _replace_file()
                     else:
@@ -121,10 +123,14 @@ class Download:
     def file_source(self, resource_url, resource_type):
         """Returns file source url."""
         file_src = None
-        response = self.session.get(resource_url)
         d_resource_url = resource_url.ljust(50)[:50]
         d_week = ('week %s' % (self.week)).ljust(8)[:8]
         d_resource_type = resource_type.ljust(8)[:8]
+        try:
+            response = self.session.get(resource_url)
+        except Exception as err:
+            self.spinner.fail(text=('%s | %s | %s | failed to find source (%s)' % (
+                d_week, d_resource_url, d_resource_type, err)))
         if resource_type == 'pdf':
             soup = BeautifulSoup(response.content, 'lxml')
             for pdf_urls in soup.find_all('div', attrs={'class': 'resourcepdf'}):
@@ -137,9 +143,9 @@ class Download:
         elif resource_type == 'web':
             self.spinner.info(text=('%s | %s | %s | skipped (external website)' % (
                 d_week, d_resource_url, d_resource_type)))
-        elif resource_type == 'text':
-            self.spinner.info(text=('%s | %s | %s | skipped (text)' % (
-                d_week, d_resource_url, d_resource_type)))
+        # elif resource_type == 'text':
+        #     self.spinner.info(text=('%s | %s | %s | skipped (text)' % (
+        #         d_week, d_resource_url, d_resource_type)))
         elif resource_type == 'image':
             soup = BeautifulSoup(
                 response.content, 'lxml')
@@ -168,7 +174,7 @@ class Download:
                         file_src = self.file_source(
                             resource_url, resource_type)
                         return file_src
-        elif resource_type in ['pptx', 'docx', 'xlsx', 'word', 'powerpoint']:
+        elif resource_type in ['pptx', 'docx', 'xlsx', 'word', 'powerpoint', 'text']:
             if response.history:
                 try:
                     response = self.session.head(

@@ -2,7 +2,7 @@
 A simple (very badly written) ACBT scraper to download course files. 
 
 ### Usage: 
-Run `python moodlescrapr2.py` 
+Run `python moodlescrapr[2-3].py` 
 
 ### Additional Options:
     usage: moodlescrapr [-h] [-u USERNAME] [-p PASSWORD] [-s SUBJECT] [-w WEEK]

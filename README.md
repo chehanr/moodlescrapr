@@ -27,7 +27,7 @@ Run `python moodlescrapr2.py`
 ### Prerequisites: 
 Run `pip install -r "requirements.txt"` 
 
-If using `moodlescrapr3.py` you must have `wget` installed and placed your `PATH` or placed inside the directory/ ENV. 
+If you're using `moodlescrapr3.py` you must have `wget` installed and placed in your `PATH` or placed inside the directory/ ENV. 
 
  *Note:*  Make sure to have all week containers in the moodle expanded before running this script. 
 

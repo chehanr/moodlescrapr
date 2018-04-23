@@ -5,6 +5,7 @@
 
 import getpass
 import os
+import urllib
 from argparse import ArgumentParser
 
 import requests
@@ -35,8 +36,12 @@ class Download:
 
         resource_url = 'https://learning.acbt.lk/moodle/mod/resource/%s' % (
             resource_uri)
-        os.system('wget --load-cookies "%s/cookies.txt" --content-disposition --show-progress --progress=bar:force -N -c "%s" -P "%s"' %
-                  (CWD, resource_url, self.path))
+        if urllib.request.getproxies():
+            os.system('wget --load-cookies "%s/cookies.txt" --content-disposition --show-progress --progress=bar:force -N -c "%s" -P "%s" -e use_proxy=yes -e http_proxy="%s" -e https_proxy="%s"' %
+                      (CWD, resource_url, self.path, urllib.request.getproxies().get('http'), urllib.request.getproxies().get('https')))
+        else:
+            os.system('wget --load-cookies "%s/cookies.txt" --content-disposition --show-progress --progress=bar:force -N -c "%s" -P "%s"' %
+                      (CWD, resource_url, self.path))
 
 
 class Scrape:
@@ -144,7 +149,8 @@ def main(username, password, specific_subject, specific_week):
     try:
         params = {'username': username, 'password': password}
         session = requests.Session()
-        session.post('https://learning.acbt.lk/user/login', data=params)
+        session.post('https://learning.acbt.lk/user/login',
+                     data=params, proxies=urllib.request.getproxies())
     except Exception as err:
         print(err)
     else:

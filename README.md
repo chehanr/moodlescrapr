@@ -5,8 +5,12 @@ A simple (very badly written) ACBT scraper to download course files.
 Run `python moodlescrapr[2-3].py` 
 
 #### GUI:
-Run `gui.py`
+Run `gui.py` or run a downloaded executable from [releases](https://github.com/chehanr/moodlescrapr/releases). 
 
+#### Building
+- Install [pyinstaller](https://www.pyinstaller.org/)
+- Run `pyinstaller build.spec`
+ 
 ### Additional Options:
     usage: moodlescrapr [-h] [-u USERNAME] [-p PASSWORD] [-s SUBJECT] [-w WEEK]
                         [-l]

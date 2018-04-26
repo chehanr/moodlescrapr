@@ -7,7 +7,7 @@ Run `python moodlescrapr[2-3].py`
 #### GUI:
 Run `gui.py` or run a downloaded executable from [releases](https://github.com/chehanr/moodlescrapr/releases). 
 
-#### Building
+##### Building:
 - Install [pyinstaller](https://www.pyinstaller.org/)
 - Run `pyinstaller build.spec`
  

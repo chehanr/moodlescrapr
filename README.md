@@ -4,12 +4,15 @@ A simple (very badly written) ACBT scraper to download course files.
 ### Usage: 
 Run `python moodlescrapr[2-3].py` 
 
+#### GUI:
+Run `gui.py`
+
 ### Additional Options:
     usage: moodlescrapr [-h] [-u USERNAME] [-p PASSWORD] [-s SUBJECT] [-w WEEK]
-                        [-r] [-rc] [-l]
-    
+                        [-l]
+
     ACBT moodle scraper (by chehanr)
-    
+
     optional arguments:
       -h, --help            show this help message and exit
       -u USERNAME, --username USERNAME
@@ -17,19 +20,16 @@ Run `python moodlescrapr[2-3].py`
       -p PASSWORD, --password PASSWORD
                             moodle password
       -s SUBJECT, --subject SUBJECT
-                            scrape only specific subject
-      -w WEEK, --week WEEK  scrape only specific week number (w 0 = outline)
-      -r, --replace         force replace existing files
-      -rc, --replace changed
-                            force replace changed files
-      -l, --list subjects   list available subjects
+                            scrape only specific subject (comma separated)
+      -w WEEK, --week WEEK  scrape only specific week number (comma separated)
+      -l, --list-subjects   list available subjects
 
 ### Prerequisites: 
 Run `pip install -r "requirements.txt"` 
 
-If you're using `moodlescrapr3.py` you must have `wget` installed and placed in your `PATH` or placed inside the directory/ ENV. 
+If you're using `moodlescrapr3.py` (`gui.py`) you must have `wget` installed and placed in your `PATH` or placed inside the directory/ ENV. 
 
- *Note:*  Make sure to have all week containers in the moodle expanded before running this script. 
+ ~~*Note:*  Make sure to have all week containers in the moodle expanded before running this script.~~
 
  *Note-2:*  Only tested on my account.
 

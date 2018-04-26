@@ -58,6 +58,8 @@ class Download:
             self._dir()
             chunk_size = 512
             downloaded = 0
+            # Removing query strings.
+            file_src = file_src.split('?', maxsplit=1)[0]
             file_name = basename(file_src)
             file_extension = os.path.splitext(file_name)[1]
             d_file_name = file_name.ljust(50)[:50]
@@ -135,17 +137,17 @@ class Download:
             soup = BeautifulSoup(response.content, 'lxml')
             for pdf_urls in soup.find_all('div', attrs={'class': 'resourcepdf'}):
                 file_src = pdf_urls.find('a')['href']
+                return file_src
             if not file_src:
                 for pdf_urls in soup.find_all('embed', attrs={
                         'type': 'application/x-google-chrome-pdf'}):
                     file_src = file_src.attrs['src']
-            return file_src
+                    return file_src
+            if not file_src:
+                self.file_source(resource_url, 'pdf2')
         elif resource_type == 'web':
             self.spinner.info(text=('%s | %s | %s | skipped (external website)' % (
                 d_week, d_resource_url, d_resource_type)))
-        # elif resource_type == 'text':
-        #     self.spinner.info(text=('%s | %s | %s | skipped (text)' % (
-        #         d_week, d_resource_url, d_resource_type)))
         elif resource_type == 'image':
             soup = BeautifulSoup(
                 response.content, 'lxml')
@@ -174,7 +176,7 @@ class Download:
                         file_src = self.file_source(
                             resource_url, resource_type)
                         return file_src
-        elif resource_type in ['pptx', 'docx', 'xlsx', 'word', 'powerpoint', 'text']:
+        elif resource_type in ['pptx', 'docx', 'xlsx', 'word', 'powerpoint', 'text', 'pdf2']:
             if response.history:
                 try:
                     response = self.session.head(
@@ -289,6 +291,7 @@ def print_subjects(subjects):
 
 def main(username, password, specific_subject, specific_week):
     """Main work."""
+    specific_subject = specific_subject.lower()
     if not username:
         username = input('Moodle username: ')
     if not password:

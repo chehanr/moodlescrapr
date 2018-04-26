@@ -291,7 +291,7 @@ def print_subjects(subjects):
 
 def main(username, password, specific_subject, specific_week):
     """Main work."""
-    specific_subject = specific_subject.lower()
+
     if not username:
         username = input('Moodle username: ')
     if not password:
@@ -309,7 +309,6 @@ def main(username, password, specific_subject, specific_week):
         if ARGS.list_subjects:
             print_subjects(subjects)
             exit()
-        # specific_subject = specific_subject.upper()
 
         def _download_resources(resources, subject_name):
             for resource in resources:
@@ -320,14 +319,14 @@ def main(username, password, specific_subject, specific_week):
             subject_name, subject_url, subject_id = subject
             scrape.reset(subject_id)
             if specific_subject and specific_week:
-                if specific_subject in subject_name:
+                if specific_subject.upper() in subject_name:
                     print('\ndownloading resources from %s in week %s' %
                           (subject_name, specific_week))
                     resources = scrape.resources(subject_id, specific_week)
                     _download_resources(resources, subject_name)
             elif specific_subject or specific_week:
                 if specific_subject:
-                    if specific_subject in subject_name:
+                    if specific_subject.upper() in subject_name:
                         print('\ndownloading all resources from %s' %
                               (subject_name))
                         week_count = scrape.week_count(subject_url)

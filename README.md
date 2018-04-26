@@ -6,14 +6,7 @@ A simple (very badly written) ACBT scraper to download course files.
 #### CLI:
 Run `python moodlescrapr[2-3].py` 
 
-#### GUI:
-Run `gui.py` or run a downloaded executable from [releases](https://github.com/chehanr/moodlescrapr/releases). 
-
-##### Building:
-- Install [pyinstaller](https://www.pyinstaller.org/)
-- Run `pyinstaller build.spec`
- 
-### Additional Options:
+##### Additional Options:
     usage: moodlescrapr [-h] [-u USERNAME] [-p PASSWORD] [-s SUBJECT] [-w WEEK]
                         [-l]
 
@@ -30,6 +23,13 @@ Run `gui.py` or run a downloaded executable from [releases](https://github.com/c
       -w WEEK, --week WEEK  scrape only specific week number (comma separated)
       -l, --list-subjects   list available subjects
 
+#### GUI:
+Run `gui.py` or run a downloaded executable from [releases](https://github.com/chehanr/moodlescrapr/releases). 
+
+##### Building:
+- Install [pyinstaller](https://www.pyinstaller.org/)
+- Run `pyinstaller build.spec`
+ 
 ### Prerequisites: 
 Run `pip install -r "requirements.txt"` 
 

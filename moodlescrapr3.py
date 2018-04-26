@@ -111,7 +111,7 @@ class Scrape:
         return resources_list
 
 
-def subject_list(subjects):
+def subject_list_display(subjects):
     """Returns the list of subjects."""
 
     _subjects = 'available subjects:\n'
@@ -139,7 +139,7 @@ def create_cookies_file(session):
         f.close()
 
 
-def main(username, password, specific_subject, specific_week):
+def main(username, password, specific_subject, specific_week, list_subjects):
     """Main work."""
 
     if not username:
@@ -158,10 +158,19 @@ def main(username, password, specific_subject, specific_week):
         subjects = scrape.subjects()
         create_cookies_file(session)
 
-        if ARGS.list_subjects:
-            print(subject_list(subjects))
+        week_list = []
+        if specific_week:
+            week_list = [int(item) for item in specific_week.split(',')]
+
+        subject_list = []
+        if specific_subject:
+            subject_list = [item.strip().upper()
+                            for item in specific_subject.split(',')]
+
+        if list_subjects:
+            print(subject_list_display(subjects))
         else:
-            def _download_resources(resources, subject_name, specific_week=None):
+            def _download_resources(resources, subject_name, week_list=None):
                 for resource in resources:
                     week, resource_uri, resource_title = resource
                     if specific_week is None:
@@ -169,7 +178,7 @@ def main(username, password, specific_subject, specific_week):
                             session, username, subject_name, week)
                         download.resource(resource_uri, resource_title)
                     else:
-                        if week == specific_week:
+                        if week in week_list:
                             download = Download(
                                 session, username, subject_name, week)
                             download.resource(resource_uri, resource_title)
@@ -177,23 +186,25 @@ def main(username, password, specific_subject, specific_week):
             for subject in subjects:
                 subject_name, _, subject_id = subject
                 resources = scrape.resources(subject_id)
-                if specific_subject and specific_week:
-                    if specific_subject.upper() in subject_name.upper():
+                if subject_list and week_list:
+                    for _subject in subject_list:
+                        if _subject in subject_name.upper():
+                            print('\ndownloading resources from %s in week %s' %
+                                  (subject_name, week_list))
+                            _download_resources(
+                                resources, subject_name, week_list)
+                elif subject_list or week_list:
+                    if subject_list:
+                        for _subject in subject_list:
+                            if _subject in subject_name.upper():
+                                print('\ndownloading all resources from %s' %
+                                      (subject_name))
+                                _download_resources(resources, subject_name)
+                    elif week_list:
                         print('\ndownloading resources from %s in week %s' %
-                              (subject_name, specific_week))
+                              (subject_name, week_list))
                         _download_resources(
-                            resources, subject_name, specific_week)
-                elif specific_subject or specific_week:
-                    if specific_subject:
-                        if specific_subject.upper() in subject_name.upper():
-                            print('\ndownloading all resources from %s' %
-                                  (subject_name))
-                            _download_resources(resources, subject_name)
-                    elif specific_week:
-                        print('\ndownloading resources from %s in week %s' %
-                              (subject_name, specific_week))
-                        _download_resources(
-                            resources, subject_name, specific_week)
+                            resources, subject_name, week_list)
                 else:
                     print('\ndownloading all resources from %s' %
                           (subject_name))
@@ -210,19 +221,17 @@ def arg_parse():
     parser.add_argument('-p', '--password', action='store', dest='password',
                         help='moodle password', required=False)
     parser.add_argument('-s', '--subject', action='store', dest='subject',
-                        help='scrape only specific subject', required=False)
+                        help='scrape only specific subject (comma separated)', required=False)
     parser.add_argument('-w', '--week', action='store', dest='week',
-                        help='scrape only specific week number (w 0 = outline)',
-                        type=int, required=False)
-    parser.add_argument('-l', '--list subjects', action='store_true', dest='list_subjects',
+                        help='scrape only specific week number (comma separated)', required=False)
+    parser.add_argument('-l', '--list-subjects', action='store_true', dest='list_subjects',
                         help='list available subjects', required=False)
     results = parser.parse_args()
 
     return results
 
 
-ARGS = arg_parse()
-
 if __name__ == '__main__':
-    main(ARGS.username, ARGS.password,
-         ARGS.subject, ARGS.week)
+    args = arg_parse()
+    main(args.username, args.password,
+         args.subject, args.week, args.list_subjects)

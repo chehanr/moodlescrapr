@@ -4,7 +4,7 @@ A simple (very badly written) ACBT scraper to download course files.
 ### Usage:
 
 #### CLI:
-Run `python moodlescrapr[2-3].py` 
+Run `python moodlescrapr3.py` 
 
 ##### Additional Options:
     usage: moodlescrapr [-h] [-u USERNAME] [-p PASSWORD] [-s SUBJECT] [-w WEEK]
@@ -32,13 +32,12 @@ Run `gui.py` or run a downloaded executable from [releases](https://github.com/c
  
 ### Prerequisites: 
 Run `pip install -r "requirements.txt"` 
-
-If you're using `moodlescrapr3.py` (`gui.py`) you must have `wget` installed and placed in your `PATH` or placed inside the directory/ ENV. 
+`wget` installed and placed in your `PATH` or placed inside the directory/ ENV. 
 
  ~~*Note:*  Make sure to have all week containers in the moodle expanded before running this script.~~
 
- *Note-2:*  Only tested on my account.
+ ~~*Note-2:*  Only tested on my account.~~
 
- *Note-3:*  Since `Note-2` I can't add support for some file types ~~(.xlsx)~~ because I couldn't find them on my moodle. If an error pops up create an issue or submit your own fix as a fork.  
+ ~~*Note-3:*  Since `Note-2` I can't add support for some file types ~~(.xlsx)~~ because I couldn't find them on my moodle. If an error pops up create an issue or submit your own fix as a fork.~~
 
- *Update:*  On the process of rewriting the script, use `moodlescrapr3.py` (Might not work properly). 
+ ~~*Update:*  On the process of rewriting the script, use `moodlescrapr3.py` (Might not work properly).~~

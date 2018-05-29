@@ -17,14 +17,12 @@ CWD = os.getcwd()
 class Download:
     """Download resource files.
 
-    :param session: Current session,
     :param username: Username,
     :param subject_name: Subject Name,
     :param week: Week number
     """
 
-    def __init__(self, session, username, subject_name, week):
-        self.session = session
+    def __init__(self, username, subject_name, week):
         self.username = username
         self.subject_name = subject_name
         self.week = week
@@ -123,6 +121,8 @@ def subject_list_display(subjects):
 
 
 def create_cookies_file(session):
+    "For wget."
+
     moodle_id_expire = None
     cookies = session.cookies
 
@@ -136,7 +136,6 @@ def create_cookies_file(session):
 
     with open(CWD + '/cookies.txt', 'w') as f:
         f.write(cookie_text)
-        f.close()
 
 
 def main(username, password, specific_subject, specific_week, list_subjects):
@@ -173,14 +172,11 @@ def main(username, password, specific_subject, specific_week, list_subjects):
             def _download_resources(resources, subject_name, week_list=None):
                 for resource in resources:
                     week, resource_uri, resource_title = resource
+                    download = Download(username, subject_name, week)
                     if specific_week is None:
-                        download = Download(
-                            session, username, subject_name, week)
                         download.resource(resource_uri, resource_title)
                     else:
                         if week in week_list:
-                            download = Download(
-                                session, username, subject_name, week)
                             download.resource(resource_uri, resource_title)
 
             for subject in subjects:

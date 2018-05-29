@@ -31,8 +31,8 @@ Run `gui.py` or run a downloaded executable from [releases](https://github.com/c
 - Run `pyinstaller build.spec`
  
 ### Prerequisites: 
-Run `pip install -r "requirements.txt"` 
-`wget` installed and placed in your `PATH` or placed inside the directory/ ENV. 
+- Run `pip install -r "requirements.txt"` 
+- `wget` installed and placed in your `PATH` or placed inside the directory/ ENV. 
 
  ~~*Note:*  Make sure to have all week containers in the moodle expanded before running this script.~~
 
